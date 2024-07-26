@@ -1,7 +1,6 @@
 import streamlit as st
 import itertools
 import yaml
-import pyperclip
 
 def generate_combinations(items):
     all_combinations = []
@@ -14,15 +13,10 @@ def format_yaml_output(combinations):
     yaml_dict = {"combination": combinations}
     return yaml.dump(yaml_dict, sort_keys=False, default_flow_style=False)
 
-
 st.title("Combination Generator")
 
 # Input field for items
 items_input = st.text_input("Enter items (comma-separated):")
-
-# Initialize session state for YAML output
-if 'yaml_output' not in st.session_state:
-    st.session_state.yaml_output = ""
 
 if st.button("Generate Combinations"):
     if items_input:
@@ -32,17 +26,11 @@ if st.button("Generate Combinations"):
         # Generate all combinations
         all_combinations = generate_combinations(items)
 
-        # Generate YAML output
-        st.session_state.yaml_output = format_yaml_output(all_combinations)
+        # Generate and display YAML output
+        yaml_output = format_yaml_output(all_combinations)
+        st.subheader("YAML Output:")
+        st.code(yaml_output, language="yaml")
+
+        st.info("To copy the output, click the copy button in the top-right corner of the code block above.")
     else:
         st.warning("Please enter some items.")
-
-# Display YAML output
-if st.session_state.yaml_output:
-    st.subheader("YAML Output:")
-    st.text_area("", st.session_state.yaml_output, height=300, key="output_area")
-
-    # Add a copy button
-    if st.button("Copy Output"):
-        pyperclip.copy(st.session_state.yaml_output)
-        st.success("Output copied to clipboard!")
